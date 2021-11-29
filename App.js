@@ -14,16 +14,16 @@ const getRemaining = (time) => {
 
 function App() {
     const [remainingSecs, setRemainingSecs] = useState(0);
-    const[isActive, setisActive] = useState(false);
+    const[isActive, setIsActive] = useState(false);
     const { mins, secs } = getRemaining(remainingSecs);
 
     const toggle = () => {
-        setisActive(!isActive);
+        setIsActive(!isActive);
     };
 
     const reset = () => {
         setRemainingSecs(0);
-        setisActive(false);
+        setIsActive(false);
     }
 
     useEffect(() => {
@@ -45,15 +45,15 @@ function App() {
             <Text style={styles.timerText}>{`${mins}:${secs}`}</Text>
 
             <View style={styles.buttonRow}>
-            <TouchableOpacity onPress={toggle} style={styles.button}>
-                <Text style={styles.buttonText}>{isActive ? 'Pause' : 'Start'}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={reset} style={[styles.button, styles.buttonReset]}>
-                <Text style={[styles.buttonText, styles.buttonTextReset]}>Reset</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={reset} style={[styles.button, styles.buttonReset]}>
-                <Text style={[styles.buttonText, styles.buttonTextReset]}>Pivot!</Text>
-            </TouchableOpacity>
+                <TouchableOpacity onPress={toggle} style={styles.button}>
+                    <Text style={styles.buttonText}>{isActive ? 'Pause' : 'Start'}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={reset} style={[styles.button, styles.buttonReset]}>
+                    <Text style={[styles.buttonText, styles.buttonTextReset]}>Reset</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={reset} style={[styles.button, styles.buttonReset]}>
+                    <Text style={[styles.buttonText, styles.buttonTextReset]}>Pivot!</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -68,23 +68,23 @@ const styles = StyleSheet.create({
     },
 
     buttonRow: {
-      flex: 2,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: '#957463',
+      marginTop: 90,
     },
 
     button: {
-        marginLeft: 10,
-        marginRight: 10,
-        borderWidth: 10,
         borderColor: '#453d3b',
         width: screen.width / 3.5,
         height: screen.width / 3.5,
         borderRadius: screen.width / 2,
         alignItems: 'center',
         justifyContent: 'center',
+        marginLeft: 10,
+        marginRight: 10,
+        borderWidth: 10,
     },
 
     buttonText: {
