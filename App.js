@@ -60,7 +60,10 @@ function App() {
     return (
         <View style={styles.container}>
             <StatusBar style='light-content' />
-            <Text style={styles.timerText}>{isContemplating ? showText() : `${mins}:${secs}`}</Text>
+            {/* <Text style={styles.timerText}>{isContemplating ? showText() : `${mins}:${secs}`}</Text> */}
+            { isContemplating ?
+                <Text style={styles.questionText}>{showText()}</Text> :
+                <Text style={styles.timerText}>{`${mins}:${secs}`}</Text>}
 
             <View style={styles.buttonRow}>
                 <TouchableOpacity onPress={toggle} style={styles.button}>
@@ -114,6 +117,12 @@ const styles = StyleSheet.create({
         color: '#baada7',
         fontSize: 90,
         marginBottom: 20,
+    },
+
+    questionText: {
+        color: '#baada7',
+        fontSize: 40,
+        marginBottom: 100,
     },
 
     buttonReset: {
