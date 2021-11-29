@@ -13,9 +13,23 @@ const getRemaining = (time) => {
 };
 
 function App() {
+    // Normal Pomodoro period
     const [remainingSecs, setRemainingSecs] = useState(0);
-    const[isActive, setIsActive] = useState(false);
+    const [isActive, setIsActive] = useState(false);
+
+    // Period of contemplation
+    const [contemplateTime, setContemplateTime] = useState(0);
+    const [isContemplating, setIsContemplating] = useState(false);
+ 
     const { mins, secs } = getRemaining(remainingSecs);
+
+    // Single string for contemplation.
+    // TODO: Add an array of them and introduce the capacity for randomizaton.
+    const contemplateString = "What are you going to do next?";
+
+    const showText = () => {
+        return contemplateString;
+    };
 
     const toggle = () => {
         setIsActive(!isActive);
@@ -24,25 +38,29 @@ function App() {
     const reset = () => {
         setRemainingSecs(0);
         setIsActive(false);
-    }
+        setIsContemplating(false);
+    };
 
     useEffect(() => {
         let interval = null;
-        if (isActive) {
+        if (isActive && remainingSecs === 5) {
+            setIsActive(false);
+            setIsContemplating(true);
+        } else if (isActive) {
             interval = setInterval(() => {
                 setRemainingSecs(remainingSecs => remainingSecs + 1);
-            }, 1000);
+            }, 1000); 
         } else if (!isActive && remainingSecs !== 0) {
             clearInterval(interval);
         }
 
         return () => clearInterval(interval);
-    }, [isActive, remainingSecs]);
+    }, [isActive, remainingSecs, isContemplating]);
 
     return (
         <View style={styles.container}>
             <StatusBar style='light-content' />
-            <Text style={styles.timerText}>{`${mins}:${secs}`}</Text>
+            <Text style={styles.timerText}>{isContemplating ? showText() : `${mins}:${secs}`}</Text>
 
             <View style={styles.buttonRow}>
                 <TouchableOpacity onPress={toggle} style={styles.button}>
