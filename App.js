@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
+import { render } from 'react-dom';
 import { StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
 
 const screen = Dimensions.get('window');
@@ -25,10 +26,17 @@ function App() {
 
     // Single string for contemplation.
     // TODO: Add an array of them and introduce the capacity for randomizaton.
-    const contemplateString = "What are you going to do next?";
+    const contemplateStrings = [
+        "What are you going to do next?",
+        "What are you getting out of this?",
+        "Have you come to a good stopping point?",
+        "Will you remember this after a break?",
+        "What else do you have to do today?",
+        "Is there another part that needs to get done first?"
+    ]
 
     const showText = () => {
-        return contemplateString;
+        return contemplateStrings[Math.floor(Math.random()*contemplateStrings.length)];
     };
 
     const toggle = () => {
@@ -40,6 +48,14 @@ function App() {
         setIsActive(false);
         setIsContemplating(false);
     };
+
+    // const contemplate = () => {
+    //     if (isActive) {
+    //         return (<Text style={styles.buttonText}>Start</Text>);
+    //     } else {
+    //         return (<Text style={styles.buttonText}>Pause</Text>);
+    //     }
+    // };
 
     useEffect(() => {
         let interval = null;
@@ -67,7 +83,8 @@ function App() {
 
             <View style={styles.buttonRow}>
                 <TouchableOpacity onPress={toggle} style={styles.button}>
-                    <Text style={styles.buttonText}>{isActive ? 'Pause' : 'Start'}</Text>
+                    <Text style={styles.buttonText}>{isActive ? "Start" : "Pause"}</Text>
+                    {/* <Text style={styles.buttonText}>{contemplate()}</Text> */}
                 </TouchableOpacity>
                 <TouchableOpacity onPress={reset} style={[styles.button, styles.buttonReset]}>
                     <Text style={[styles.buttonText, styles.buttonTextReset]}>Reset</Text>
