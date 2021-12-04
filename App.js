@@ -50,25 +50,10 @@ function App() {
         } else if (isActive && remainingSecs <= pomoTime && isContemplating === false) {
             setIsActive(false);
             setRemainingSecs(0);
+        } else if (isContemplating && remainingSecs <= thinkTime) {
+            setIsContemplating(false);
+            setRemainingSecs(0);
         }
-        // Start
-        // if (!isActive && !isContemplating) {
-        //     setIsActive(true);
-        // // Reset the clock; proper Pomodoros don't allow pausing.
-        // } else if (isActive && remainingSecs <= pomoTime && !isContemplating) {
-        //     setIsActive(false);
-        //     setRemainingSecs(0);
-        // } else if (isActive && remainingSecs === pomoTime && !isContemplating) {
-        //     setIsActive(false);
-        //     setIsContemplating(true);
-        //     setRemainingSecs(0);
-        // } else if (isContemplating && contemplateTime === thinkTime) {
-        //     setIsContemplating(false);
-        //     setContemplateTime(0);
-        //     setIsActive(true);
-        // } else if (isActive) {
-        //     setIsActive(false);
-        // }
     };
 
     const reset = () => {
@@ -82,32 +67,27 @@ function App() {
         if (isActive && remainingSecs === pomoTime) {
             setIsActive(false);
             setIsContemplating(true);
-            setRemainingSecs(1);
-
-            // Trying to handle the contemplation cycle 
-            if (setRemainingSecs === thinkTime) {
-                setIsContemplating(false);
-            } else if (isContemplating) {
-                interval = setInterval(() => {
-                    setRemainingSecs(remainingSecs => remainingSecs + 1);
-                }, 1000); 
-            } else if (!isContemplating && remainingSecs !== 0) {
-                setRemainingSecs(0);
-                clearInterval(interval);
-            }
-
-            setIsActive(true);
-
+            setRemainingSecs(0);
         } else if (isActive) {
             interval = setInterval(() => {
                 setRemainingSecs(remainingSecs => remainingSecs + 1);
             }, 1000); 
-        } else if (!isActive && remainingSecs !== 0) {
+        } else if (isContemplating) {
+            interval = setInterval(() => {
+                setRemainingSecs(remainingSecs => remainingSecs + 1);
+            }, 1000); 
+
+            if (remainingSecs === thinkTime) {
+                setIsContemplating(false);
+                setIsActive(true);
+                setRemainingSecs(0);
+            }
+        } else if (isContemplating && remainingSecs !== 0) {
             clearInterval(interval);
         }
 
         return () => clearInterval(interval);
-    }, [isActive, remainingSecs, isContemplating, setContemplateTime]);
+    }, [isActive, remainingSecs, isContemplating]);
 
     return (
         <View style={styles.container}>
