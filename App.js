@@ -24,6 +24,9 @@ function App() {
  
     const { mins, secs } = getRemaining(remainingSecs);
 
+    const pomoTime = 5;
+    const thinkTime = 3;
+
     // Single string for contemplation.
     // TODO: Add an array of them and introduce the capacity for randomizaton.
     const contemplateStrings = [
@@ -40,18 +43,32 @@ function App() {
     };
 
     const toggle = () => {
-        // setIsActive(!isActive);
+        setIsActive(!isActive);
 
         if (isActive === false && isContemplating === false) {
             setIsActive(true);
-            setRemainingSecs(0);
-        } else if (isActive === true && isContemplating === false) {
+        } else if (isActive && remainingSecs <= pomoTime && isContemplating === false) {
             setIsActive(false);
-            setIsContemplating(true);
-        } else if (isActive === false && isContemplating === true) {
-            setIsContemplating(false);
-            setContemplateTime(0);
+            setRemainingSecs(0);
         }
+        // Start
+        // if (!isActive && !isContemplating) {
+        //     setIsActive(true);
+        // // Reset the clock; proper Pomodoros don't allow pausing.
+        // } else if (isActive && remainingSecs <= pomoTime && !isContemplating) {
+        //     setIsActive(false);
+        //     setRemainingSecs(0);
+        // } else if (isActive && remainingSecs === pomoTime && !isContemplating) {
+        //     setIsActive(false);
+        //     setIsContemplating(true);
+        //     setRemainingSecs(0);
+        // } else if (isContemplating && contemplateTime === thinkTime) {
+        //     setIsContemplating(false);
+        //     setContemplateTime(0);
+        //     setIsActive(true);
+        // } else if (isActive) {
+        //     setIsActive(false);
+        // }
     };
 
     const reset = () => {
@@ -62,20 +79,24 @@ function App() {
 
     useEffect(() => {
         let interval = null;
-        let contemplateInterval = null;
-        if (remainingSecs === 5) {
+        if (isActive && remainingSecs === pomoTime) {
             setIsActive(false);
             setIsContemplating(true);
+            setRemainingSecs(1);
 
-            if (contemplateTime === 3) {
+            // Trying to handle the contemplation cycle 
+            if (setRemainingSecs === thinkTime) {
                 setIsContemplating(false);
             } else if (isContemplating) {
-                contemplateInterval = setInterval(() => {
-                    setContemplateTime(contemplateTime => contemplateTime + 1);
-                }, 1000);
-            } else if (!isContemplating && contemplateTime !== 0) {
-                clearInterval(contemplateInterval);
+                interval = setInterval(() => {
+                    setRemainingSecs(remainingSecs => remainingSecs + 1);
+                }, 1000); 
+            } else if (!isContemplating && remainingSecs !== 0) {
+                setRemainingSecs(0);
+                clearInterval(interval);
             }
+
+            setIsActive(true);
 
         } else if (isActive) {
             interval = setInterval(() => {
