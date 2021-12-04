@@ -21,15 +21,17 @@ function App() {
     // Period of contemplation
     const [contemplateTime, setContemplateTime] = useState(0);
     const [isContemplating, setIsContemplating] = useState(false);
+    const [question, setQuestion] = useState("");
  
     const { mins, secs } = getRemaining(remainingSecs);
 
-    const pomoTime = 5;
-    const thinkTime = 3;
+    // Default 25 mins = 1500 seconds
+    const pomoTime = 1500;
+    // Default 5 mins = 300 seconds
+    const thinkTime = 300;
 
-    // Single string for contemplation.
-    // TODO: Add an array of them and introduce the capacity for randomizaton.
-    const contemplateStrings = [
+    // Current set of questions
+    const questionStrings = [
         "What are you going to do next?",
         "What are you getting out of this?",
         "Have you come to a good stopping point?",
@@ -38,25 +40,29 @@ function App() {
         "Is there another part that needs to get done first?"
     ]
 
-    const showText = () => {
-        return contemplateStrings[Math.floor(Math.random()*contemplateStrings.length)];
+    // Pick a random question to display during the contemplation phase.
+    const selectQuestion = () => {
+        setQuestion(questionStrings[Math.floor(Math.random()*questionStrings.length)]);
     };
 
     const toggle = () => {
-        setIsActive(!isActive);
-
         if (isActive === false && isContemplating === false) {
             setIsActive(true);
+        // True Pomodoros don't allow pausing; reset counter on a stop
         } else if (isActive && remainingSecs <= pomoTime && isContemplating === false) {
             setIsActive(false);
             setRemainingSecs(0);
+        // Reset counter if the contemplation period is stopped.
         } else if (isContemplating && remainingSecs <= thinkTime) {
             setIsContemplating(false);
             setRemainingSecs(0);
+        } else {
+            setIsActive(false);
+            setIsContemplating(false);
         }
     };
 
-    const reset = () => {
+    const pivot = () => {
         setRemainingSecs(0);
         setIsActive(false);
         setIsContemplating(false);
@@ -73,6 +79,12 @@ function App() {
                 setRemainingSecs(remainingSecs => remainingSecs + 1);
             }, 1000); 
         } else if (isContemplating) {
+            // Chooses a single question for the contemplation period
+            // Fixes a weird bug where this would be changed at random intervals
+            if (question === "" ) {
+                selectQuestion();
+            }
+
             interval = setInterval(() => {
                 setRemainingSecs(remainingSecs => remainingSecs + 1);
             }, 1000); 
@@ -81,26 +93,27 @@ function App() {
                 setIsContemplating(false);
                 setIsActive(true);
                 setRemainingSecs(0);
+                setQuestion("");
             }
         } else if (isContemplating && remainingSecs !== 0) {
             clearInterval(interval);
         }
 
         return () => clearInterval(interval);
-    }, [isActive, remainingSecs, isContemplating]);
+    }, [isActive, remainingSecs, isContemplating, question]);
 
     return (
         <View style={styles.container}>
             <StatusBar style='light-content' />
-            { isContemplating ? <Text style={styles.questionText}>{showText()}</Text> : null }
+            { isContemplating ? <Text style={styles.questionText}>{question}</Text> : null }
             <Text style={styles.timerText}>{`${mins}:${secs}`}</Text>
 
             <View style={styles.buttonRow}>
                 <TouchableOpacity onPress={toggle} style={styles.button}>
                     <Text style={styles.buttonText}>{!isActive && !isContemplating ? "Start" : "Stop"}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={reset} style={[styles.button, styles.buttonReset]}>
-                    <Text style={[styles.buttonText, styles.buttonTextReset]}>Pivot!</Text>
+                <TouchableOpacity onPress={pivot} style={[styles.button, styles.buttonPivot]}>
+                    <Text style={[styles.buttonText, styles.buttonTextPivot]}>Pivot!</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -152,11 +165,11 @@ const styles = StyleSheet.create({
         marginBottom: 100,
     },
 
-    buttonReset: {
+    buttonPivot: {
         borderColor: '#453d3b',
     },
 
-    buttonTextReset: {
+    buttonTextPivot: {
         color: '#b4c9de',
     }
 });
