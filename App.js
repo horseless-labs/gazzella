@@ -40,7 +40,18 @@ function App() {
     };
 
     const toggle = () => {
-        setIsActive(!isActive);
+        // setIsActive(!isActive);
+
+        if (isActive === false && isContemplating === false) {
+            setIsActive(true);
+            setRemainingSecs(0);
+        } else if (isActive === true && isContemplating === false) {
+            setIsActive(false);
+            setIsContemplating(true);
+        } else if (isActive === false && isContemplating === true) {
+            setIsContemplating(false);
+            setContemplateTime(0);
+        }
     };
 
     const reset = () => {
@@ -49,19 +60,23 @@ function App() {
         setIsContemplating(false);
     };
 
-    // const contemplate = () => {
-    //     if (isActive) {
-    //         return (<Text style={styles.buttonText}>Start</Text>);
-    //     } else {
-    //         return (<Text style={styles.buttonText}>Pause</Text>);
-    //     }
-    // };
-
     useEffect(() => {
         let interval = null;
-        if (isActive && remainingSecs === 5) {
+        let contemplateInterval = null;
+        if (remainingSecs === 5) {
             setIsActive(false);
             setIsContemplating(true);
+
+            if (contemplateTime === 3) {
+                setIsContemplating(false);
+            } else if (isContemplating) {
+                contemplateInterval = setInterval(() => {
+                    setContemplateTime(contemplateTime => contemplateTime + 1);
+                }, 1000);
+            } else if (!isContemplating && contemplateTime !== 0) {
+                clearInterval(contemplateInterval);
+            }
+
         } else if (isActive) {
             interval = setInterval(() => {
                 setRemainingSecs(remainingSecs => remainingSecs + 1);
@@ -71,23 +86,17 @@ function App() {
         }
 
         return () => clearInterval(interval);
-    }, [isActive, remainingSecs, isContemplating]);
+    }, [isActive, remainingSecs, isContemplating, setContemplateTime]);
 
     return (
         <View style={styles.container}>
             <StatusBar style='light-content' />
-            {/* <Text style={styles.timerText}>{isContemplating ? showText() : `${mins}:${secs}`}</Text> */}
-            { isContemplating ?
-                <Text style={styles.questionText}>{showText()}</Text> :
-                <Text style={styles.timerText}>{`${mins}:${secs}`}</Text>}
+            { isContemplating ? <Text style={styles.questionText}>{showText()}</Text> : null }
+            <Text style={styles.timerText}>{`${mins}:${secs}`}</Text>
 
             <View style={styles.buttonRow}>
                 <TouchableOpacity onPress={toggle} style={styles.button}>
-                    <Text style={styles.buttonText}>{isActive ? "Start" : "Pause"}</Text>
-                    {/* <Text style={styles.buttonText}>{contemplate()}</Text> */}
-                </TouchableOpacity>
-                <TouchableOpacity onPress={reset} style={[styles.button, styles.buttonReset]}>
-                    <Text style={[styles.buttonText, styles.buttonTextReset]}>Reset</Text>
+                    <Text style={styles.buttonText}>{!isActive && !isContemplating ? "Start" : "Stop"}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={reset} style={[styles.button, styles.buttonReset]}>
                     <Text style={[styles.buttonText, styles.buttonTextReset]}>Pivot!</Text>
